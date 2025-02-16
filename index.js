@@ -10,6 +10,8 @@ import AnalyticsDashboard from './routes/analytics/dashboard.js';
 import Login from './routes/authentication/login.js';
 import Logout from './routes/authentication/logout.js';
 
+import Config from './routes/config/mobileConfig.js'
+
 import Referral from './routes/crosschannel/referral.js';
 import Sync from './routes/crosschannel/sync.js';
 
@@ -46,6 +48,7 @@ app.use(express.json());
 
 app.use('/auth/login', Login);
 app.use('/auth/logout', Logout);
+app.use('/config', Config);
 app.use('/customer', Registration);
 app.use('/profile', Profile);
 app.use('/loyalty', loyaltyProfile);

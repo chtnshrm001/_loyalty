@@ -75,7 +75,8 @@ import Middleware from '../../utils/middleware.js'
  */
 router.post("/update", Middleware.Auth, async (req, res) => {
   try {
-    const phone = req.user.phone;
+    const user = req.user;
+    const phone = user.phone;
     const { email, name, preferences, dob, gender, countryOfResidence, nationality, } = req.body;
 
     const customerModel = await Customer();
@@ -83,6 +84,10 @@ router.post("/update", Middleware.Auth, async (req, res) => {
 
     if (!customer) {
         return res.status(404).json("User not found");
+    }
+
+    if (!customer.token) {
+      return res.status(404).json("Invalid Token");
     }
 
     if (name) customer.name = name;

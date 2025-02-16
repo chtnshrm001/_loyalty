@@ -22,9 +22,9 @@ router.post('/feedback', async (req, res) => {
     try {
       const feedback = new Feedback(req.body);
       await feedback.save();
-      res.status(201).send({ message: 'Feedback submitted successfully' });
+      return res.status(201).send({ message: 'Feedback submitted successfully' });
     } catch (err) {
-      res.status(400).send({ error: err.message });
+      return res.status(400).send({ error: err.message });
     }
 });
 

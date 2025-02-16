@@ -23,9 +23,6 @@ import Customer from '../../schema/customer.js';
  *               email:
  *                 type: string
  *                 example: "abc@xyz.com"
- *               password:
- *                 type: string
- *                 example: "P@ssword1234"
  *               name:
  *                 type: string
  *                 example: "XYZ" 
@@ -76,7 +73,7 @@ import Customer from '../../schema/customer.js';
  */
 router.post("/register", async (req, res) => {
   try {
-    const { email, password, name, phone, preferences, dob, gender, countryOfResidence, nationality, } = req.body;
+    const { email, name, phone, preferences, dob, gender, countryOfResidence, nationality, } = req.body;
 
     // 1. Registration should only be done using phone
     if (!phone) {
@@ -97,8 +94,7 @@ router.post("/register", async (req, res) => {
       }
 
       // Create a new customer profile
-      const hashedPassword = await bcrypt.hash(password, 10);
-      customer = new customerModel({ email, hashedPassword, name, phone, preferences, dob, gender, countryOfResidence, nationality});
+      customer = new customerModel({ email, name, phone, preferences, dob, gender, countryOfResidence, nationality});
 
       const token = jsonWebToken.sign({ userId: customer._id }, 'token',  {expiresIn : '3h'});
       const refToken = jsonWebToken.sign({ userId: customer._id}, 'refToken', {expiresIn: '30d'});

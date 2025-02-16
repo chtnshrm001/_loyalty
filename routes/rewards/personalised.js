@@ -23,7 +23,7 @@ router.get('/offers/personalized/:id', async (req, res) => {
       const offers = await Offer.find();
       res.send(offers); // Extend logic for personalization
     } catch (err) {
-      res.status(500).send({ error: err.message });
+      return res.status(500).send({ error: err.message });
     }
 });
 

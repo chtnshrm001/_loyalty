@@ -58,6 +58,13 @@ router.post('/', Middleware.Auth, async (req, res) => {
     const customerModel = await Customer();
     const customer = await customerModel.findOne({ phone });
 
+    if (!customer) {
+        return res.status(404).json('Customer not found!');
+    }
+    if (!customer.token) {
+        return res.status(404).json('Customer already logged out');
+    }
+
     customer.token = null;
     customer.refToken = null;
 
@@ -65,9 +72,9 @@ router.post('/', Middleware.Auth, async (req, res) => {
 
     if (customer) {
         res.clearCookie('token');
-        res.status(200).json('Customer Logged Out Successfully');
+        return res.status(200).json('Customer Logged Out Successfully');
     } else {
-        res.status(400).json('No Customer associated with provided token');
+        return res.status(400).json('No Customer associated with provided token');
     }
 
     

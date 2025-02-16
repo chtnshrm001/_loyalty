@@ -30,9 +30,9 @@ router.post('/loyalty/redeem', async (req, res) => {
       customer.points -= reward.pointsRequired;
       await customer.save();
   
-      res.status(200).send({ message: 'Reward redeemed successfully', remainingPoints: customer.points });
+      return res.status(200).send({ message: 'Reward redeemed successfully', remainingPoints: customer.points });
     } catch (err) {
-      res.status(400).send({ error: err.message });
+      return res.status(400).send({ error: err.message });
     }
 });
   

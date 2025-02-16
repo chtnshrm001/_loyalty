@@ -13,12 +13,14 @@ const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?!.*([a-zA-Z
 //Collections
 const svocCollectionProfile = 'profile';
 const loyaltyCollectionProfile = 'loyaltyProfile';
+const loyaltyCollectionMobileConfig = 'mobileConfig';
 const svocCollectionOTP = 'otp';
 
 
 //Models
 const svocModelProfile = 'profile';
 const loyaltyModelProfile = 'loyaltyProfile';
+const loyaltyModelMobileConfig = 'mobileConfig';
 const svocModelOTP = 'otp';
 
 export default {
@@ -29,7 +31,9 @@ export default {
     svocCollectionProfile : svocCollectionProfile,
     svocCollectionOTP : svocCollectionOTP,
     loyaltyCollectionProfile : loyaltyCollectionProfile,
+    loyaltyCollectionMobileConfig : loyaltyCollectionMobileConfig,
     svocModelProfile : svocModelProfile,
     loyaltyModelProfile : loyaltyModelProfile,
+    loyaltyModelMobileConfig : loyaltyModelMobileConfig,
     svocModelOTP : svocModelOTP
 };
