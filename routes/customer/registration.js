@@ -1,11 +1,13 @@
 import express from "express";
-import bcrypt from 'bcryptjs';
 import jsonWebToken from 'jsonwebtoken';
 
 const router = express.Router();
 
 //import schema
 import Customer from '../../schema/customer.js';
+import LoyaltyProfile from '../../schema/loyaltyProfile.js';
+import { v4 } from "uuid";
+
 
 /**
  * @swagger
@@ -36,7 +38,7 @@ import Customer from '../../schema/customer.js';
  *                   type: string
  *               dob:
  *                 type: date
- *                 example: mm/dd/yyyy
+ *                 example: dd/mm/yyyy
  *               gender:
  *                 type: string
  *                 example: "female"
@@ -105,7 +107,22 @@ router.post("/register", async (req, res) => {
 
       await customer.save();
 
-      return res.status(200).json("Customer Registered Successfully");
+      const loyaltyModel = await LoyaltyProfile();
+      let loyaltyCustomer = await loyaltyModel.findOne({ phone });
+
+      if (!loyaltyCustomer) {
+        // Create a new customer profile
+        const loyaltyid = v4();
+        const tier = "Bronze";
+        const cashback = 0;
+        const points = 0;
+        loyaltyCustomer = new loyaltyModel({ loyaltyid, phone, tier, cashback, points});
+
+        await loyaltyCustomer.save();
+
+      } 
+
+      return res.status(200).json({message: 'Customer Registered Successfully'});
     } else {
       // 4. Allow updating details after registration
       if (email && customer.email !== email) {

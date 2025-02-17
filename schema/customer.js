@@ -13,12 +13,6 @@ const customerSchema = {
     trim: true,
     match: [/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, 'Please provide a valid email address'] // Regex to validate email format
   },
-  hashedPassword: {
-    type: String,
-    required: true,
-    minlength: 8,
-    match: [Constants.passwordPattern, 'Password must be at least 8 characters long, contain one lowercase letter, one uppercase letter, one digit, one special character']
-  },
   name: {
     type: String,
     required: true,

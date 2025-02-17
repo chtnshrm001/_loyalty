@@ -4,6 +4,9 @@ import mongoose from 'mongoose';
 import Constants from '../utils/Constants.js';
 
 const loyaltyProfileSchema = {
+    loyaltyid: {
+        type: String
+    },
     phone: {
         type: String,
         required: true
