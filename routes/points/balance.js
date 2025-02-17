@@ -24,7 +24,7 @@ router.get('/loyalty/balance/:id', async (req, res) => {
       if (!customer) return res.status(404).send({ error: 'Customer not found' });
       res.send({ points: customer.points });
     } catch (err) {
-      res.status(500).send({ error: err.message });
+      return res.status(500).send({ error: err.message });
     }
 });
 

@@ -79,7 +79,7 @@ router.post("/", async (req, res) => {
       user.tokenExpiry =  new Date(Date.now() + 3 * 60 * 60 * 1000);
       user.refTokenExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       await user.save();
-      res.status(200).json({token: token, refToken: refToken});
+      return res.status(200).json({token: token, refToken: refToken});
   
     } catch (error) {
       return res.status(500).json({ error: "Internal Server Error", details: error.message });
@@ -134,7 +134,7 @@ router.post('/send-otp', async (req, res) => {
     //TODO : send OTP via sms
     //sendOTP(phone, otp);
 
-    res.status(200).json({ message: 'OTP sent successfully', otp: otp});
+    return res.status(200).json({ message: 'OTP sent successfully', otp: otp});
 
 });
 
@@ -201,9 +201,9 @@ router.post('/verify-otp', async (req, res) => {
         user.tokenExpiry =  new Date(Date.now() + 3 * 60 * 60 * 1000);
         user.refTokenExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         await user.save();
-        res.status(200).json({token: token, refToken: refToken});
+        return res.status(200).json({token: token, refToken: refToken});
     } else {
-        res.status(404).json({message: 'Customer not found'});
+        return res.status(404).json({message: 'Customer not found'});
     }
 
     

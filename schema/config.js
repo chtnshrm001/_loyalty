@@ -3,10 +3,7 @@ import mongoose from 'mongoose';
 
 import Constants from '../utils/Constants.js';
 
-const loyaltyProfileSchema = {
-    loyaltyid: {
-        type: String
-    },
+const loyaltyMobileConfig = {
     phone: {
         type: String,
         required: true
@@ -29,18 +26,18 @@ const loyaltyProfileSchema = {
     }
 };
   
-const collection = {collection: Constants.loyaltyCollectionProfile};
+const collection = {collection: Constants.loyaltyCollectionMobileConfig};
 
-async function Customer() {
+async function Config() {
     const dbInstance = await connection(Constants.dbLoyaltyEngine);
-    const model = Constants.loyaltyModelProfile;
+    const model = Constants.loyaltyModelMobileConfig;
 
     //avoid overwriting compiled model
     if (dbInstance.models[model]) {
         return dbInstance.models[model];
     }
 
-    return dbInstance.model(model, new mongoose.Schema(loyaltyProfileSchema, collection));
+    return dbInstance.model(model, new mongoose.Schema(loyaltyMobileConfig, collection));
 }
     
-export default Customer;
+export default Config;

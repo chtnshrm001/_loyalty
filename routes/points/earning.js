@@ -33,9 +33,9 @@ router.post('/loyalty/earning', async (req, res) => {
       customer.transactions.push(transaction._id);
       await customer.save();
   
-      res.status(200).send({ pointsEarned: points, totalPoints: customer.points });
+      return res.status(200).send({ pointsEarned: points, totalPoints: customer.points });
     } catch (err) {
-      res.status(400).send({ error: err.message });
+      return res.status(400).send({ error: err.message });
     }
 });
 

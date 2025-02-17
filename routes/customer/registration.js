@@ -1,11 +1,13 @@
 import express from "express";
-import bcrypt from 'bcryptjs';
 import jsonWebToken from 'jsonwebtoken';
 
 const router = express.Router();
 
 //import schema
 import Customer from '../../schema/customer.js';
+import LoyaltyProfile from '../../schema/loyaltyProfile.js';
+import { v4 } from "uuid";
+
 
 /**
  * @swagger
@@ -23,9 +25,6 @@ import Customer from '../../schema/customer.js';
  *               email:
  *                 type: string
  *                 example: "abc@xyz.com"
- *               password:
- *                 type: string
- *                 example: "P@ssword1234"
  *               name:
  *                 type: string
  *                 example: "XYZ" 
@@ -39,7 +38,7 @@ import Customer from '../../schema/customer.js';
  *                   type: string
  *               dob:
  *                 type: date
- *                 example: mm/dd/yyyy
+ *                 example: dd/mm/yyyy
  *               gender:
  *                 type: string
  *                 example: "female"
@@ -76,7 +75,7 @@ import Customer from '../../schema/customer.js';
  */
 router.post("/register", async (req, res) => {
   try {
-    const { email, password, name, phone, preferences, dob, gender, countryOfResidence, nationality, } = req.body;
+    const { email, name, phone, preferences, dob, gender, countryOfResidence, nationality, } = req.body;
 
     // 1. Registration should only be done using phone
     if (!phone) {
@@ -97,8 +96,7 @@ router.post("/register", async (req, res) => {
       }
 
       // Create a new customer profile
-      const hashedPassword = await bcrypt.hash(password, 10);
-      customer = new customerModel({ email, hashedPassword, name, phone, preferences, dob, gender, countryOfResidence, nationality});
+      customer = new customerModel({ email, name, phone, preferences, dob, gender, countryOfResidence, nationality});
 
       const token = jsonWebToken.sign({ userId: customer._id }, 'token',  {expiresIn : '3h'});
       const refToken = jsonWebToken.sign({ userId: customer._id}, 'refToken', {expiresIn: '30d'});
@@ -109,7 +107,22 @@ router.post("/register", async (req, res) => {
 
       await customer.save();
 
-      return res.status(200).json("Customer Registered Successfully");
+      const loyaltyModel = await LoyaltyProfile();
+      let loyaltyCustomer = await loyaltyModel.findOne({ phone });
+
+      if (!loyaltyCustomer) {
+        // Create a new customer profile
+        const loyaltyid = v4();
+        const tier = "Bronze";
+        const cashback = 0;
+        const points = 0;
+        loyaltyCustomer = new loyaltyModel({ loyaltyid, phone, tier, cashback, points});
+
+        await loyaltyCustomer.save();
+
+      } 
+
+      return res.status(200).json({message: 'Customer Registered Successfully'});
     } else {
       // 4. Allow updating details after registration
       if (email && customer.email !== email) {
