@@ -5,6 +5,8 @@ import path from 'path';
 import dotenv from 'dotenv';
 const ENV = process.env.NODE_ENV || 'development';
 
+const __dirname = path.resolve();
+
 //import routes
 import CustomerInsight from './routes/analytics/customerinsight.js';
 import AnalyticsDashboard from './routes/analytics/dashboard.js';
@@ -72,6 +74,12 @@ app.use('/cashback/earn-cashback', Earning);
 app.use('/cashback/burn-cashback', Reedem);
 app.use('/cashback/transaction-history', Transactions);
 app.use('/cashback/transaction-details', TransactionDetails);
+
+app.use("/admin", express.static(path.join(__dirname, "admin-panel/build")));
+
+app.get("/admin/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin-panel/build", "index.html"));
+});
 
 app.listen(PORT, () => {
     console.log('Server Listening on Port', PORT);
