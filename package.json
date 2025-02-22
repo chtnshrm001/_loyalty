@@ -3,13 +3,16 @@
   "version": "0.0.1",
   "description": "loyalty engine setup",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "NODE_ENV=development node index.js",
+    "prd": "NODE_ENV=production node index.js"
   },
   "author": "booshtie",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",

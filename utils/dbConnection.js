@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import Constants from '../utils/Constants.js';
 
 let globalConnection = null;
 const connectionInstances = {};
@@ -7,7 +6,8 @@ const connectionInstances = {};
 const connection = async function(dbStringName){
 
     if (!globalConnection) {
-        globalConnection = await mongoose.connect(Constants.dbURI, {
+        console.log(process.env.DB_URI);
+        globalConnection = await mongoose.connect(process.env.DB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });

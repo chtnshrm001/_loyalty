@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Sync
  *     tags:
- *       - Cross Channel
+ *       - Extras
  *     responses:
  *       200:
  *         description: Sync Registered Successfully

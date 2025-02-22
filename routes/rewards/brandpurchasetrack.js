@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Brand Purchase Track
  *     tags:
- *       - Rewards
+ *       - Extras
  *     responses:
  *       200:
  *         description: Brand Purchase Track Registered Successfully

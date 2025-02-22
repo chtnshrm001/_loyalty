@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Personalized Promo
  *     tags:
- *       - Rewards
+ *       - Extras
  *     responses:
  *       200:
  *         description: Personalized Promo Registered Successfully

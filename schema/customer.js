@@ -1,13 +1,11 @@
 import connection from '../utils/dbConnection.js';
 import mongoose from 'mongoose';
 
-import Constants from '../utils/Constants.js';
-
 // Customer Schema
 const customerSchema = {
   email: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
     lowercase: true,
     trim: true,
@@ -15,7 +13,7 @@ const customerSchema = {
   },
   name: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   phone: {
@@ -29,22 +27,22 @@ const customerSchema = {
   },
   dob: {
     type: Date,
-    required: true,
+    required: false,
     trim: true,
   },
   gender: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   countryOfResidence: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   nationality: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   token: {
@@ -69,11 +67,11 @@ const customerSchema = {
   },
 };
 
-const collection = {collection: Constants.svocCollectionProfile};
+const collection = {collection: process.env.SVOC_COLLECTION_PROFILE};
 
 async function Customer() {
-  const dbInstance = await connection(Constants.dbSVOC);
-  const model = Constants.svocModelProfile;
+  const dbInstance = await connection(process.env.DB_SVOC);
+  const model = process.env.SVOC_MODEL_PROFILE;
 
   //avoid overwriting compiled model
   if (dbInstance.models[model]) {

@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Customer Insight
  *     tags:
- *       - Analytics
+ *       - Extras
  *     responses:
  *       200:
  *         description: Customer Insight Registered Successfully

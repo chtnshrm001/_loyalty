@@ -3,13 +3,13 @@ import express from "express";
 const router = express.Router();
 
 //import schema
-import LoyaltyProfile from '../../schema/loyaltyProfile.js';
+import Transaction from '../../schema/transaction.js';
 
 /**
  * @swagger
- * /cashback/transaction-history:
+ * /cashback/transaction-details:
  *   post:
- *     summary: Fetch Transactions
+ *     summary: Fetch Transaction Details
  *     requestBody:
  *       description: Add JSON 
  *       required: true
@@ -18,9 +18,9 @@ import LoyaltyProfile from '../../schema/loyaltyProfile.js';
  *           schema:
  *             type: object
  *             properties:
- *               loyaltyid:
+ *               transactionid:
  *                 type: string
- *                 example: "09b16dc8-b4c0-4d56-b06d-a3202a00a4ca"
+ *                 example: "67b6454f196caaf2015c766f"
  *     security:
  *       - BearerAuth: []
  *     description: Fetches point balance
@@ -28,12 +28,12 @@ import LoyaltyProfile from '../../schema/loyaltyProfile.js';
  *       - Cashback
  *     responses:
  *       200:
- *         description: Transactions fetched successfully
+ *         description: Transaction fetched successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: string
- *               example: "Transactions fetched successfully"
+ *               example: "Transaction fetched successfully"
  *       400:
  *         description: Bad Request (Phone Required)
  *         content:
@@ -57,18 +57,18 @@ import LoyaltyProfile from '../../schema/loyaltyProfile.js';
  */
 router.post("/", async (req, res) => {
   try {
-    const { loyaltyid, } = req.body;
+    const { transactionid, } = req.body;
 
-    const loyaltyModel = await LoyaltyProfile();
-    let customer = await loyaltyModel.findOne({ loyaltyid });
+    const transactionModel = await Transaction();
+    let transaction = await transactionModel.findById(transactionid);
 
-    if (!customer) {
+    if (!transaction) {
       return res.status(404).json("Customer not found!");
     }
 
     return res.status(200).json({ 
-      message : "Transactions fetched successfully", 
-      transactions: customer.transactions
+      message : "Transaction fetched successfully", 
+      transactions: transaction
     });
   } catch (error) {
         return res.status(500).json({ error: "Internal Server Error", details: error.message });

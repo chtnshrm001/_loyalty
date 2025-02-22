@@ -5,15 +5,15 @@ const router = express.Router();
 
 //import schema
 import Customer from '../../schema/customer.js';
-import LoyaltyProfile from '../../schema/loyaltyProfile.js';
-import { v4 } from "uuid";
-
+import Middleware from '../../utils/middleware.js';
 
 /**
  * @swagger
  * /customer/register:
  *   post:
  *     summary: Register Loyalty Customer
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       description: Add JSON 
  *       required: true
@@ -28,9 +28,6 @@ import { v4 } from "uuid";
  *               name:
  *                 type: string
  *                 example: "XYZ" 
- *               phone:
- *                 type: string
- *                 example: "+999543210789"
  *               preferences:
  *                 type: array
  *                 example: ["Apple", "Orange", "Peach"]
@@ -38,7 +35,7 @@ import { v4 } from "uuid";
  *                   type: string
  *               dob:
  *                 type: date
- *                 example: dd/mm/yyyy
+ *                 example: 01/01/1990
  *               gender:
  *                 type: string
  *                 example: "female"
@@ -72,8 +69,50 @@ import { v4 } from "uuid";
  *             schema:
  *               type: string
  *               example: "Email is already associated with a different phone number"
+ * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
-router.post("/register", async (req, res) => {
+router.post("/register", Middleware.Auth, async (req, res) => {
+  try {
+    const user = req.user;
+    const phone = user.phone;
+
+    const { email, name, preferences, dob, gender, countryOfResidence, nationality, } = req.body;
+
+    // 2. Check if customer already exists by phone number
+    const customerModel = await Customer();
+    let customer = await customerModel.findOne({ phone });
+
+    if (customer) {
+      const token = jsonWebToken.sign({ userId: customer._id }, 'token',  {expiresIn : '3h'});
+      const refToken = jsonWebToken.sign({ userId: customer._id}, 'refToken', {expiresIn: '30d'});
+      customer.token = token;
+      customer.refToken = refToken;
+      customer.tokenExpiry =  new Date(Date.now() + 3 * 60 * 60 * 1000);
+      customer.refTokenExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      customer.email = email; customer.name = name;
+      customer.preferences = preferences; customer.dob = dob;
+      customer.gender = gender; customer.countryOfResidence = countryOfResidence;
+      customer.nationality = nationality;
+
+      await customer.save();
+      return res.status(200).json({message: 'Customer Registered Successfully'});
+    } else {
+      return res.status(409).json({message: 'Customer Registration Failed'});
+    }
+  } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
+});
+
+
+export default router;
+
+/*router.post("/register", async (req, res) => {
   try {
     const { email, name, phone, preferences, dob, gender, countryOfResidence, nationality, } = req.body;
 
@@ -139,5 +178,7 @@ router.post("/register", async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error", details: error.message });
   }
 });
+*/
 
-export default router;
+
+//TODO : Registration via phone number (bare minimum information to be asked)
