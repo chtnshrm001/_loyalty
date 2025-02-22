@@ -1,5 +1,5 @@
 import jsonWebToken from 'jsonwebtoken';
-import BLToken from '../schema/blacklistedToken.js';
+import BLToken from '../schema/blToken.js';
 
 const MiddlewareAuth = async function (req, res, next) {
     const token = req.header('Authorization')?.split(' ')[1];

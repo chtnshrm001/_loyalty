@@ -4,7 +4,7 @@ const router = express.Router();
 import Middleware from '../../utils/middleware.js';
 import Customer from '../../schema/customer.js';
 
-import BLToken from '../../schema/blackListedToken.js';
+import BLToken from '../../schema/blToken.js';
 
 /**
  * @swagger
