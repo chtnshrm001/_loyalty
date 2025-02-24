@@ -63,23 +63,17 @@ router.post('/', async (req, res) => {
       const points = Math.floor(amount * 0.01); // 1% of the amount
       const customerId = user.loyaltyid;
   
-      console.log('hihihih');
       const transactionModel = await Transaction();
       let transaction = await transactionModel({customerId, brandName, amount, points, type, location });
-      console.log('hihihih 1');
       await transaction.save();
-      console.log('hihihih 2');
       
       user.cashbackBalance = user.cashbackBalance + points;
       user.cashbackEarned = user.cashbackEarned + points;
-      console.log('hihihih 2');
       user.transactions.push(transaction._id.toString());
-      console.log('hi 2');
       await user.save();
   
       return res.status(200).send({ pointsEarned: points, totalPoints: user.cashbackBalance });
     } catch (err) {
-      console.log('hi 3' + err.message);
       return res.status(500).send({ error: err.message });
     }
 });

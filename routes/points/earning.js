@@ -78,7 +78,6 @@ router.post('/', async (req, res) => {
   
       return res.status(200).send({ pointsEarned: points, totalPoints: user.cashbackBalance });
     } catch (err) {
-      console.log('hi 3' + err.message);
       return res.status(500).send({ error: err.message });
     }
 });

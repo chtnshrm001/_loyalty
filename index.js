@@ -48,7 +48,6 @@ import { configDotenv } from 'dotenv';
 const app = express();
 
 dotenv.config( {path: `.env.${ENV}`});
-console.log(process.env.PORT)
 
 const PORT = process.env.PORT || 3001;
 

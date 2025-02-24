@@ -13,11 +13,8 @@ const otpSchema = {
 const collection = {collection: process.env.SVOC_COLLECTION_OTP};
 
 async function OTP() {
-    console.log(process.env.SVOC_COLLECTION_OTP);
-    console.log(process.env.DB_SVOC);
     const dbInstance = await connection(process.env.DB_SVOC);
     const model = process.env.SVOC_MODEL_OTP;
-    console.log('hiiuhi')
 
     //avoid overwriting compiled model
     if (dbInstance.models[model]) {

@@ -6,7 +6,6 @@ const connectionInstances = {};
 const connection = async function(dbStringName){
 
     if (!globalConnection) {
-        console.log(process.env.DB_URI);
         globalConnection = await mongoose.connect(process.env.DB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
