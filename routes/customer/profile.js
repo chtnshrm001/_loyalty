@@ -32,7 +32,7 @@ import Middleware from '../../utils/middleware.js'
  *                   type: string
  *               dob:
  *                 type: date
- *                 example: mm/dd/yyyy
+ *                 example: 01/01/1990
  *               gender:
  *                 type: string
  *                 example: "female"

@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers History
  *     tags:
- *       - Rewards
+ *       - Extras
  *     responses:
  *       200:
  *         description: History Registered Successfully

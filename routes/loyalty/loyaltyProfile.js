@@ -59,7 +59,7 @@ import { v4 } from "uuid";
  */
 router.post("/createProfile", async (req, res) => {
   try {
-    const { phone, tier, cashback, points, } = req.body;
+    const { phone, tier, cashbackBalance, points, } = req.body;
 
     // 1. Registration should only be done using phone
     if (!phone) {
@@ -73,7 +73,7 @@ router.post("/createProfile", async (req, res) => {
     if (!customer) {
       // Create a new customer profile
       const loyaltyid = v4();
-      customer = new customerModel({ loyaltyid, phone, tier, cashback, points});
+      customer = new customerModel({ cashbackBalance, loyaltyid, phone, tier, cash, points});
 
       await customer.save();
 

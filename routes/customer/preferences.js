@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Preferences
  *     tags:
- *       - Customer
+ *       - Extras
  *     responses:
  *       200:
  *         description: Preferences Registered Successfully

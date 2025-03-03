@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Brand Promo
  *     tags:
- *       - Rewards
+ *       - Extras
  *     responses:
  *       200:
  *         description: Brand Promo Registered Successfully

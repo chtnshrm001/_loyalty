@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Dashboard
  *     tags:
- *       - Analytics
+ *       - Extras
  *     responses:
  *       200:
  *         description: Dashboard Registered Successfully

@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: Support Ticket
  *     tags:
- *       - Customer Support
+ *       - Extras
  *     responses:
  *       200:
  *         description: Support Ticket Created Successfully

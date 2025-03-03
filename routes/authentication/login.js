@@ -8,6 +8,9 @@ const router = express.Router();
 //import schema
 import OTP from '../../schema/otp.js';
 import Customer from '../../schema/customer.js';
+import Middlware from "../../utils/middleware.js";
+import LoyaltyProfile from '../../schema/loyaltyProfile.js';
+import { v4 } from "uuid";
 
 /**
  * @swagger
@@ -190,26 +193,99 @@ router.post('/verify-otp', async (req, res) => {
     }
 
     const userModel = await Customer();
-    const user = await userModel.findOne({ phone });
+    let user = await userModel.findOne({ phone });
+
+    await OTPModel.deleteOne({ phone });
+
+    
+    const token = jsonWebToken.sign({ phone: phone }, 'token',  {expiresIn : '3h'});
+    const refToken = jsonWebToken.sign({ phone: phone}, 'refToken', {expiresIn: '30d'});
 
     if (user) {
-        await OTPModel.deleteOne({ phone });
-        const token = jsonWebToken.sign({ phone: phone }, 'token',  {expiresIn : '3h'});
-        const refToken = jsonWebToken.sign({ phone: phone}, 'refToken', {expiresIn: '30d'});
         user.token = token;
         user.refToken = refToken;
         user.tokenExpiry =  new Date(Date.now() + 3 * 60 * 60 * 1000);
         user.refTokenExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         await user.save();
-        return res.status(200).json({token: token, refToken: refToken});
     } else {
-        return res.status(404).json({message: 'Customer not found'});
-    }
+        let customer = userModel({ phone });
+        customer.token = token;
+        customer.refToken = refToken;
+        customer.tokenExpiry =  new Date(Date.now() + 3 * 60 * 60 * 1000);
+        customer.refTokenExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        await customer.save();
 
-    
+        const loyaltyModel = await LoyaltyProfile();
+        let loyaltyCustomer = await loyaltyModel.findOne({ phone });
+  
+        if (!loyaltyCustomer) {
+          // Create a new customer profile
+          const loyaltyid = v4();
+          const tier = "Bronze";
+          const cashback = 0;
+          const points = 0;
+          loyaltyCustomer = new loyaltyModel({ loyaltyid, phone, tier, cashback, points});
+  
+          await loyaltyCustomer.save();
+        }
+    }
+    return res.status(200).json({message: 'Customer added Successfully', token: token, refToken: refToken});
 });
 
 export default router;
+
+/**
+ * @swagger
+ * /auth/login/refresh-token:
+ *   post:
+ *     summary: Send Token/Ref Token for Login
+ *     security:
+ *       - BearerAuth: []
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: OTP Sent Successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "OTP Sent Successfully"
+ *       400:
+ *         description: Bad Request (Phone Required)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Phone number is required for OTP"
+ */
+router.post('/refresh-token', Middlware.AuthRef, async (req, res) => {
+  try {
+    const user = req.user;
+    const phone = user.phone;
+
+    const customerModel = await Customer();
+    let customer = await customerModel.findOne({ phone });
+
+    if (!customer) {
+        return res.status(404).json("User not found");
+    }
+
+    const token = jsonWebToken.sign({ phone: phone }, 'token',  {expiresIn : '0.5h'});
+    const refToken = jsonWebToken.sign({ phone: phone}, 'refToken', {expiresIn: '30d'});
+    customer.token = token;
+    customer.refToken = refToken;
+    customer.tokenExpiry =  new Date(Date.now() + 3 * 60 * 60 * 1000);
+    customer.refTokenExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    await customer.save();
+
+    return res.status(200).json({token: token, refToken: refToken});
+
+  } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
+});
+
 
 
 

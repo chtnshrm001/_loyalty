@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Availability
  *     tags:
- *       - Rewards
+ *       - Extras
  *     responses:
  *       200:
  *         description: Availability Registered Successfully

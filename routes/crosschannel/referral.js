@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Referral
  *     tags:
- *       - Cross Channel
+ *       - Extras
  *     responses:
  *       200:
  *         description: Referral Registered Successfully

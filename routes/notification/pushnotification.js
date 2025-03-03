@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Push Notification
  *     tags:
- *       - Notifications
+ *       - Extras
  *     responses:
  *       200:
  *         description: Push Notification Registered Successfully

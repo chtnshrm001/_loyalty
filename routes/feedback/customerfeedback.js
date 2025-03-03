@@ -7,7 +7,7 @@ const router = express.Router();
  *   get:
  *     summary: registers Customer Feedback
  *     tags:
- *       - Customer Support
+ *       - Extras
  *     responses:
  *       200:
  *         description: Customer Feedback Registered Successfully

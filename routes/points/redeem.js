@@ -1,40 +1,81 @@
 import express from "express";
 const router = express.Router();
 
+import Customer from '../../schema/loyaltyProfile.js';
+import Transaction from '../../schema/transaction.js';
+
 /**
  * @swagger
- * /Reedemption:
- *   get:
- *     summary: registers Reedemption
+ * /cashback/burn-cashback:
+ *   post:
+ *     summary: registers Redeemption
+ *     requestBody:
+ *       description: Add JSON 
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: "+999543210789"
+ *               brandName:
+ *                 type: string
+ *                 example: "SSS"
+ *               amount:
+ *                 type: number
+ *                 example: 1000
  *     tags:
- *       - Points
+ *       - Cashback
  *     responses:
  *       200:
- *         description: Reedemption Registered Successfully
+ *         description: Points Redeemed Successfully
  *         content:
  *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Points Redeemed Successfully"
+ *       400:
+ *         description: Bad Request (Phone Required)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Phone number is required for Redeemption"
+ *       409:
+ *         description: Conflicting Transaction
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Conflicting Transaction"
  */
-router.get('/', (req, res) => {
-    res.send('Hi router tested');
-});
-
-router.post('/loyalty/redeem', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-      const { customerId, rewardId } = req.body;
-      const customer = await Customer.findById(customerId);
-      const reward = await Reward.findById(rewardId);
+      const { phone, brandName, amount, type, location } = req.body;
+
+      const userModel = await Customer();
+      let user = await userModel.findOne({ phone });
+
+      if (!user) res.status(404).json({ message: 'User not registered for loyalty program!'});
+
+      const points = Math.floor(amount * 0.01); // 1% of the amount
+      const customerId = user.loyaltyid;
   
-      if (!customer || !reward) return res.status(404).send({ error: 'Customer or Reward not found' });
-      if (customer.points < reward.pointsRequired) return res.status(400).send({ error: 'Insufficient points' });
+      const transactionModel = await Transaction();
+      let transaction = await transactionModel({customerId, brandName, amount, points, type, location });
+      await transaction.save();
+      
+      user.cashbackBalance = user.cashbackBalance + points;
+      user.cashbackEarned = user.cashbackEarned + points;
+      user.transactions.push(transaction._id.toString());
+      await user.save();
   
-      customer.points -= reward.pointsRequired;
-      await customer.save();
-  
-      return res.status(200).send({ message: 'Reward redeemed successfully', remainingPoints: customer.points });
+      return res.status(200).send({ pointsEarned: points, totalPoints: user.cashbackBalance });
     } catch (err) {
-      return res.status(400).send({ error: err.message });
+      return res.status(500).send({ error: err.message });
     }
 });
-  
 
 export default router;

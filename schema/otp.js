@@ -1,6 +1,5 @@
 import connection from '../utils/dbConnection.js';
 
-import Constants from '../utils/Constants.js';
 import mongoose from 'mongoose';
 
 //OTP Schema
@@ -11,11 +10,11 @@ const otpSchema = {
     expiresAt: { type: Date, default: Date.now}
 };
 
-const collection = {collection: Constants.svocCollectionOTP};
+const collection = {collection: process.env.SVOC_COLLECTION_OTP};
 
 async function OTP() {
-    const dbInstance = await connection(Constants.dbSVOC);
-    const model = Constants.svocModelOTP;
+    const dbInstance = await connection(process.env.DB_SVOC);
+    const model = process.env.SVOC_MODEL_OTP;
 
     //avoid overwriting compiled model
     if (dbInstance.models[model]) {

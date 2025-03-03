@@ -4,6 +4,8 @@ const router = express.Router();
 import Middleware from '../../utils/middleware.js';
 import Customer from '../../schema/customer.js';
 
+import BLToken from '../../schema/blToken.js';
+
 /**
  * @swagger
  * /auth/logout:
@@ -58,6 +60,8 @@ router.post('/', Middleware.Auth, async (req, res) => {
     const customerModel = await Customer();
     const customer = await customerModel.findOne({ phone });
 
+    const blTokenModel = await BLToken();
+
     if (!customer) {
         return res.status(404).json('Customer not found!');
     }
@@ -65,8 +69,22 @@ router.post('/', Middleware.Auth, async (req, res) => {
         return res.status(404).json('Customer already logged out');
     }
 
-    customer.token = null;
-    customer.refToken = null;
+    try {
+        const token = customer.token;
+        await blTokenModel.create({ token});
+
+        customer.token = null;
+        customer.refToken = null;
+        await customer.save();
+
+        if (customer) {
+            res.clearCookie('token');
+        }
+
+        res.status(200).json({ message : 'Customer Logged out successfully' });
+    } catch (error) {
+        res.status(500).json({ message : 'Internal Server Error' });
+    }
 
     await customer.save();
 
@@ -76,8 +94,6 @@ router.post('/', Middleware.Auth, async (req, res) => {
     } else {
         return res.status(400).json('No Customer associated with provided token');
     }
-
-    
 });
 
 export default router;

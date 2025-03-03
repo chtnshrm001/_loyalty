@@ -1,41 +1,84 @@
 import express from "express";
 const router = express.Router();
 
+import Customer from '../../schema/loyaltyProfile.js';
+import Transaction from '../../schema/transaction.js';
+
 /**
  * @swagger
- * /Earning:
- *   get:
+ * /cashback/earn-cashback:
+ *   post:
  *     summary: registers Earning
+ *     requestBody:
+ *       description: Add JSON 
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: "+999543210789"
+ *               brandName:
+ *                 type: string
+ *                 example: "SSS"
+ *               amount:
+ *                 type: number
+ *                 example: 1000
+ *               location:
+ *                 type: string
+ *                 example: "Dubai Mall"
  *     tags:
- *       - Points
+ *       - Cashback
  *     responses:
  *       200:
- *         description: Earning Registered Successfully
+ *         description: Points Added Successfully
  *         content:
  *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Points Added Successfully"
+ *       400:
+ *         description: Bad Request (Phone Required)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Phone number is required for registration"
+ *       409:
+ *         description: Conflicting Transaction
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Conflicting Transaction"
  */
-router.get('/', (req, res) => {
-    res.send('Hi router tested');
-});
-
-router.post('/loyalty/earning', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-      const { customerId, brandId, amount } = req.body;
-      const points = Math.floor(amount / 10); // Example calculation
+      const { phone, brandName, amount, location } = req.body;
+      const type = "earn";
+      
+      const userModel = await Customer();
+      let user = await userModel.findOne({ phone });
+
+      if (!user) res.status(404).json({ message: 'User not registered for loyalty program!'});
+
+      const points = Math.floor(amount * 0.01); // 1% of the amount
+      const customerId = user.loyaltyid;
   
-      const transaction = new Transaction({ customerId, brandId, amount, points });
+      const transactionModel = await Transaction();
+      let transaction = await transactionModel({customerId, brandName, amount, points, type, location });
       await transaction.save();
+      
+      user.cashbackBalance = user.cashbackBalance + points;
+      user.cashbackEarned = user.cashbackEarned + points;
+      user.transactions.push(transaction._id.toString());
+      await user.save();
   
-      const customer = await Customer.findById(customerId);
-      if (!customer) return res.status(404).send({ error: 'Customer not found' });
-  
-      customer.points += points;
-      customer.transactions.push(transaction._id);
-      await customer.save();
-  
-      return res.status(200).send({ pointsEarned: points, totalPoints: customer.points });
+      return res.status(200).send({ pointsEarned: points, totalPoints: user.cashbackBalance });
     } catch (err) {
-      return res.status(400).send({ error: err.message });
+      return res.status(500).send({ error: err.message });
     }
 });
 
